@@ -15,9 +15,9 @@
 #include <curses.h>
 #include <string.h>
 
-#define TREAS_ROOM 20 /* one chance in TREAS_ROOM for a treasure room */
-#define MAXTREAS 10   /* maximum number of treasures in a treasure room */
-#define MINTREAS 2    /* minimum number of treasures in a treasure room */
+const int TREAS_ROOM = 20; /* one chance in TREAS_ROOM for a treasure room */
+const int MAXTREAS = 10;   /* maximum number of treasures in a treasure room */
+const int MINTREAS = 2;    /* minimum number of treasures in a treasure room */
 
 void new_level() {
   THING *tp;
@@ -167,7 +167,7 @@ void put_things() {
  * treas_room:
  *	Add a treasure room
  */
-#define MAXTRIES 10 /* max number of tries to put down a monster */
+const int MAXTRIES = 10; /* max number of tries to put down a monster */
 
 void treas_room() {
   int nm;

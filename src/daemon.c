@@ -14,9 +14,9 @@
 #include "rogue.h"
 #include <curses.h>
 
-#define EMPTY 0
-#define DAEMON -1
-#define MAXDAEMONS 20
+const int EMPTY = 0;
+const int DAEMON = -1;
+//const int MAXDAEMONS = 20;
 
 #define _X_                                                                    \
   { EMPTY }

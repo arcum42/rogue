@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#pragma once
+
 #include "extern.h"
 
 #undef lines
@@ -19,32 +21,32 @@
 /*
  * Maximum number of different things
  */
-#define MAXROOMS 9
-#define MAXTHINGS 9
-#define MAXOBJ 9
-#define MAXPACK 23
-#define MAXTRAPS 10
-#define AMULETLEVEL 26
-#define NUMTHINGS 7 /* number of types of things */
-#define MAXPASS 13  /* upper limit on number of passages */
-#define NUMLINES 24
-#define NUMCOLS 80
-#define STATLINE (NUMLINES - 1)
-#define BORE_LEVEL 50
+static const int MAXROOMS = 9;
+static const int MAXTHINGS = 9;
+static const int MAXOBJ = 9;
+static const int MAXPACK = 23;
+static const int MAXTRAPS = 10;
+static const int AMULETLEVEL = 26;
+static const int NUMTHINGS = 7; /* number of types of things */
+static const int MAXPASS = 13;  /* upper limit on number of passages */
+static const int NUMLINES = 24;
+static const int NUMCOLS = 80;
+static const int STATLINE = (NUMLINES - 1);
+static const int BORE_LEVEL = 50;
 
 /*
  * return values for get functions
  */
-#define NORM 0  /* normal exit */
-#define QUIT 1  /* quit option setting */
-#define MINUS 2 /* back up one option */
+static const int NORM = 0;  /* normal exit */
+static const int QUIT = 1;  /* quit option setting */
+static const int MINUS = 2; /* back up one option */
 
 /*
  * inventory types
  */
-#define INV_OVER 0
-#define INV_SLOW 1
-#define INV_CLEAR 2
+static const int INV_OVER = 0;
+static const int INV_SLOW = 1;
+static const int INV_CLEAR = 2;
 
 /*
  * All the fun defines
@@ -117,18 +119,20 @@
 #define WANDERTIME spread(70)
 #define BEFORE spread(1)
 #define AFTER spread(2)
-#define HEALTIME 30
-#define HUHDURATION 20
-#define SEEDURATION 850
-#define HUNGERTIME 1300
-#define MORETIME 150
-#define STOMACHSIZE 2000
-#define STARVETIME 850
-#define ESCAPE 27
-#define LEFT 0
-#define RIGHT 1
-#define BOLT_LENGTH 6
-#define LAMPDIST 3
+
+static const int HEALTIME = 30;
+static const int HUHDURATION = 20;
+static const int SEEDURATION = 850;
+static const int HUNGERTIME = 1300;
+static const int MORETIME = 150;
+static const int STOMACHSIZE = 2000;
+static const int STARVETIME = 850;
+static const int ESCAPE = 27;
+static const int LEFT = 0;
+static const int RIGHT = 1;
+static const int BOLT_LENGTH = 6;
+static const int LAMPDIST = 3;
+
 #ifdef MASTER
 #ifndef PASSWD
 #define PASSWD "mTBellIQOsLNA"
@@ -138,180 +142,180 @@
 /*
  * Save against things
  */
-#define VS_POISON 00
-#define VS_PARALYZATION 00
-#define VS_DEATH 00
-#define VS_BREATH 02
-#define VS_MAGIC 03
+static const int VS_POISON = 00;
+static const int VS_PARALYZATION = 00;
+static const int VS_DEATH = 00;
+static const int VS_BREATH = 02;
+static const int VS_MAGIC = 03;
 
 /*
  * Various flag bits
  */
 /* flags for rooms */
-#define ISDARK 0000001 /* room is dark */
-#define ISGONE 0000002 /* room is gone (a corridor) */
-#define ISMAZE 0000004 /* room is gone (a corridor) */
+static const int ISDARK = 0000001; /* room is dark */
+static const int ISGONE = 0000002; /* room is gone (a corridor) */
+static const int ISMAZE = 0000004; /* room is gone (a corridor) */
 
 /* flags for objects */
-#define ISCURSED 000001 /* object is cursed */
-#define ISKNOW 0000002  /* player knows details about the object */
-#define ISMISL 0000004  /* object is a missile type */
-#define ISMANY 0000010  /* object comes in groups */
+static const int ISCURSED = 000001; /* object is cursed */
+static const int ISKNOW = 0000002;  /* player knows details about the object */
+static const int ISMISL = 0000004;  /* object is a missile type */
+static const int ISMANY = 0000010;  /* object comes in groups */
 /*	ISFOUND 0000020		...is used for both objects and creatures */
-#define ISPROT 0000040 /* armor is permanently protected */
+static const int ISPROT = 0000040; /* armor is permanently protected */
 
 /* flags for creatures */
-#define CANHUH 0000001  /* creature can confuse */
-#define CANSEE 0000002  /* creature can see invisible creatures */
-#define ISBLIND 0000004 /* creature is blind */
-#define ISCANC 0000010  /* creature has special qualities cancelled */
-#define ISLEVIT 0000010 /* hero is levitating */
-#define ISFOUND 0000020 /* creature has been seen (used for objects) */
-#define ISGREED 0000040 /* creature runs to protect gold */
-#define ISHASTE 0000100 /* creature has been hastened */
-#define ISTARGET 000200 /* creature is the target of an 'f' command */
-#define ISHELD 0000400  /* creature has been held */
-#define ISHUH 0001000   /* creature is confused */
-#define ISINVIS 0002000 /* creature is invisible */
-#define ISMEAN 0004000  /* creature can wake when player enters room */
-#define ISHALU 0004000  /* hero is on acid trip */
-#define ISREGEN 0010000 /* creature can regenerate */
-#define ISRUN 0020000   /* creature is running at the player */
-#define SEEMONST 040000 /* hero can detect unseen monsters */
-#define ISFLY 0040000   /* creature can fly */
-#define ISSLOW 0100000  /* creature has been slowed */
+static const int CANHUH = 0000001;  /* creature can confuse */
+static const int CANSEE = 0000002;  /* creature can see invisible creatures */
+static const int ISBLIND = 0000004; /* creature is blind */
+static const int ISCANC = 0000010;  /* creature has special qualities cancelled */
+static const int ISLEVIT = 0000010; /* hero is levitating */
+static const int ISFOUND = 0000020; /* creature has been seen (used for objects) */
+static const int ISGREED = 0000040; /* creature runs to protect gold */
+static const int ISHASTE = 0000100; /* creature has been hastened */
+static const int ISTARGET = 000200; /* creature is the target of an 'f' command */
+static const int ISHELD = 0000400;  /* creature has been held */
+static const int ISHUH = 0001000;   /* creature is confused */
+static const int ISINVIS = 0002000; /* creature is invisible */
+static const int ISMEAN = 0004000;  /* creature can wake when player enters room */
+static const int ISHALU = 0004000;  /* hero is on acid trip */
+static const int ISREGEN = 0010000; /* creature can regenerate */
+static const int ISRUN = 0020000;   /* creature is running at the player */
+static const int SEEMONST = 040000; /* hero can detect unseen monsters */
+static const int ISFLY = 0040000;   /* creature can fly */
+static const int ISSLOW = 0100000;  /* creature has been slowed */
 
 /*
  * Flags for level map
  */
-#define F_PASS 0x80    /* is a passageway */
-#define F_SEEN 0x40    /* have seen this spot before */
-#define F_DROPPED 0x20 /* object was dropped here */
-#define F_LOCKED 0x20  /* door is locked */
-#define F_REAL 0x10    /* what you see is what you get */
-#define F_PNUM 0x0f    /* passage number mask */
-#define F_TMASK 0x07   /* trap number mask */
+static const int F_PASS = 0x80;    /* is a passageway */
+static const int F_SEEN = 0x40;    /* have seen this spot before */
+static const int F_DROPPED = 0x20; /* object was dropped here */
+static const int F_LOCKED = 0x20;  /* door is locked */
+static const int F_REAL = 0x10;    /* what you see is what you get */
+static const int F_PNUM = 0x0f;    /* passage number mask */
+static const int F_TMASK = 0x07;   /* trap number mask */
 
 /*
  * Trap types
  */
-#define T_DOOR 00
-#define T_ARROW 01
-#define T_SLEEP 02
-#define T_BEAR 03
-#define T_TELEP 04
-#define T_DART 05
-#define T_RUST 06
-#define T_MYST 07
-#define NTRAPS 8
+static const int T_DOOR = 00;
+static const int T_ARROW = 01;
+static const int T_SLEEP = 02;
+static const int T_BEAR = 03;
+static const int T_TELEP = 04;
+static const int T_DART = 05;
+static const int T_RUST = 06;
+static const int T_MYST = 07;
+static const int NTRAPS = 8;
 
 /*
  * Potion types
  */
-#define P_CONFUSE 0
-#define P_LSD 1
-#define P_POISON 2
-#define P_STRENGTH 3
-#define P_SEEINVIS 4
-#define P_HEALING 5
-#define P_MFIND 6
-#define P_TFIND 7
-#define P_RAISE 8
-#define P_XHEAL 9
-#define P_HASTE 10
-#define P_RESTORE 11
-#define P_BLIND 12
-#define P_LEVIT 13
-#define MAXPOTIONS 14
+static const int P_CONFUSE = 0;
+static const int P_LSD = 1;
+static const int P_POISON = 2;
+static const int P_STRENGTH = 3;
+static const int P_SEEINVIS = 4;
+static const int P_HEALING = 5;
+static const int P_MFIND = 6;
+static const int P_TFIND = 7;
+static const int P_RAISE = 8;
+static const int P_XHEAL = 9;
+static const int P_HASTE = 10;
+static const int P_RESTORE = 11;
+static const int P_BLIND = 12;
+static const int P_LEVIT = 13;
+static const int MAXPOTIONS = 14;
 
 /*
  * Scroll types
  */
-#define S_CONFUSE 0
-#define S_MAP 1
-#define S_HOLD 2
-#define S_SLEEP 3
-#define S_ARMOR 4
-#define S_ID_POTION 5
-#define S_ID_SCROLL 6
-#define S_ID_WEAPON 7
-#define S_ID_ARMOR 8
-#define S_ID_R_OR_S 9
-#define S_SCARE 10
-#define S_FDET 11
-#define S_TELEP 12
-#define S_ENCH 13
-#define S_CREATE 14
-#define S_REMOVE 15
-#define S_AGGR 16
-#define S_PROTECT 17
-#define MAXSCROLLS 18
+static const int S_CONFUSE = 0;
+static const int S_MAP = 1;
+static const int S_HOLD = 2;
+static const int S_SLEEP = 3;
+static const int S_ARMOR = 4;
+static const int S_ID_POTION = 5;
+static const int S_ID_SCROLL = 6;
+static const int S_ID_WEAPON = 7;
+static const int S_ID_ARMOR = 8;
+static const int S_ID_R_OR_S = 9;
+static const int S_SCARE = 10;
+static const int S_FDET = 11;
+static const int S_TELEP = 12;
+static const int S_ENCH = 13;
+static const int S_CREATE = 14;
+static const int S_REMOVE = 15;
+static const int S_AGGR = 16;
+static const int S_PROTECT = 17;
+static const int MAXSCROLLS = 18;
 
 /*
  * Weapon types
  */
-#define MACE 0
-#define SWORD 1
-#define BOW 2
-#define ARROW 3
-#define DAGGER 4
-#define TWOSWORD 5
-#define DART 6
-#define SHIRAKEN 7
-#define SPEAR 8
-#define FLAME 9      /* fake entry for dragon breath (ick) */
-#define MAXWEAPONS 9 /* this should equal FLAME */
+static const int MACE = 0;
+static const int SWORD = 1;
+static const int  BOW = 2;
+static const int ARROW = 3;
+static const int  DAGGER = 4;
+static const int TWOSWORD = 5;
+static const int DART = 6;
+static const int SHIRAKEN = 7;
+static const int SPEAR = 8;
+static const int FLAME = 9;      /* fake entry for dragon breath (ick) */
+static const int MAXWEAPONS = 9; /* this should equal FLAME */
 
 /*
  * Armor types
  */
-#define LEATHER 0
-#define RING_MAIL 1
-#define STUDDED_LEATHER 2
-#define SCALE_MAIL 3
-#define CHAIN_MAIL 4
-#define SPLINT_MAIL 5
-#define BANDED_MAIL 6
-#define PLATE_MAIL 7
-#define MAXARMORS 8
+static const int LEATHER = 0;
+static const int RING_MAIL = 1;
+static const int STUDDED_LEATHER = 2;
+static const int SCALE_MAIL = 3;
+static const int CHAIN_MAIL = 4;
+static const int SPLINT_MAIL = 5;
+static const int BANDED_MAIL = 6;
+static const int PLATE_MAIL = 7;
+static const int MAXARMORS = 8;
 
 /*
  * Ring types
  */
-#define R_PROTECT 0
-#define R_ADDSTR 1
-#define R_SUSTSTR 2
-#define R_SEARCH 3
-#define R_SEEINVIS 4
-#define R_NOP 5
-#define R_AGGR 6
-#define R_ADDHIT 7
-#define R_ADDDAM 8
-#define R_REGEN 9
-#define R_DIGEST 10
-#define R_TELEPORT 11
-#define R_STEALTH 12
-#define R_SUSTARM 13
-#define MAXRINGS 14
+static const int R_PROTECT = 0;
+static const int R_ADDSTR = 1;
+static const int R_SUSTSTR = 2;
+static const int R_SEARCH = 3;
+static const int R_SEEINVIS = 4;
+static const int R_NOP = 5;
+static const int R_AGGR = 6;
+static const int R_ADDHIT = 7;
+static const int R_ADDDAM = 8;
+static const int R_REGEN = 9;
+static const int R_DIGEST = 10;
+static const int R_TELEPORT = 11;
+static const int R_STEALTH = 12;
+static const int R_SUSTARM = 13;
+static const int MAXRINGS = 14;
 
 /*
  * Rod/Wand/Staff types
  */
-#define WS_LIGHT 0
-#define WS_INVIS 1
-#define WS_ELECT 2
-#define WS_FIRE 3
-#define WS_COLD 4
-#define WS_POLYMORPH 5
-#define WS_MISSILE 6
-#define WS_HASTE_M 7
-#define WS_SLOW_M 8
-#define WS_DRAIN 9
-#define WS_NOP 10
-#define WS_TELAWAY 11
-#define WS_TELTO 12
-#define WS_CANCEL 13
-#define MAXSTICKS 14
+static const int WS_LIGHT = 0;
+static const int WS_INVIS = 1;
+static const int WS_ELECT = 2;
+static const int WS_FIRE = 3;
+static const int WS_COLD = 4;
+static const int WS_POLYMORPH = 5;
+static const int WS_MISSILE = 6;
+static const int WS_HASTE_M = 7;
+static const int WS_SLOW_M = 8;
+static const int WS_DRAIN = 9;
+static const int WS_NOP = 10;
+static const int WS_TELAWAY = 11;
+static const int WS_TELTO = 12;
+static const int WS_CANCEL = 13;
+static const int MAXSTICKS = 14;
 
 /*
  * Now we define the structures and types
@@ -730,7 +734,7 @@ THING *new_thing();
 
 struct room *roomin(coord *cp);
 
-#define MAXDAEMONS 20
+static const int MAXDAEMONS = 20;
 
 extern struct delayed_action {
   int d_type;

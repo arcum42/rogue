@@ -15,7 +15,7 @@
 #include <curses.h>
 #include <string.h>
 
-#define NO_WEAPON -1
+const int NO_WEAPON = -1;
 
 int group = 2;
 

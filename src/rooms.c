@@ -20,7 +20,7 @@ typedef struct spot { /* position matrix for maze positions */
   int used;
 } SPOT;
 
-#define GOLDGRP 1
+const int GOLDGRP = 1;
 
 /*
  * do_rooms:

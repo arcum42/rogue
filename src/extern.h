@@ -10,6 +10,8 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#pragma once
+
 #ifdef HAVE_CONFIG_H
 #ifdef PDCURSES
 #undef HAVE_UNISTD_H
@@ -99,12 +101,14 @@
  */
 
 #include <stdlib.h>
+#include <stdbool.h>
+#include <curses.h>
 
 #undef SIGTSTP
 
-#define MAXSTR 1024 /* maximum length of strings */
-#define MAXLINES 32 /* maximum number of screen lines used */
-#define MAXCOLS 80  /* maximum number of screen columns used */
+static const int MAXSTR = 1024; /* maximum length of strings */
+static const int MAXLINES = 32; /* maximum number of screen lines used */
+static const int MAXCOLS = 80;  /* maximum number of screen columns used */
 
 #define RN (((seed = seed * 11109 + 13849) >> 16) & 0xffff)
 #ifdef CTRL
