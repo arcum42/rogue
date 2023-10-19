@@ -142,180 +142,204 @@ static const int LAMPDIST = 3;
 /*
  * Save against things
  */
-static const int VS_POISON = 00;
-static const int VS_PARALYZATION = 00;
-static const int VS_DEATH = 00;
-static const int VS_BREATH = 02;
-static const int VS_MAGIC = 03;
+enum save_types {
+VS_POISON = 00,
+VS_PARALYZATION = 00,
+VS_DEATH = 00,
+VS_BREATH = 02,
+VS_MAGIC = 03
+};
 
 /*
  * Various flag bits
  */
 /* flags for rooms */
-static const int ISDARK = 0000001; /* room is dark */
-static const int ISGONE = 0000002; /* room is gone (a corridor) */
-static const int ISMAZE = 0000004; /* room is gone (a corridor) */
+enum room_flags {
+ISDARK = 0000001, /* room is dark */
+ISGONE = 0000002, /* room is gone (a corridor) */
+ISMAZE = 0000004 /* room is gone (a corridor) */
+};
 
 /* flags for objects */
-static const int ISCURSED = 000001; /* object is cursed */
-static const int ISKNOW = 0000002;  /* player knows details about the object */
-static const int ISMISL = 0000004;  /* object is a missile type */
-static const int ISMANY = 0000010;  /* object comes in groups */
+enum object_flags {
+ISCURSED = 000001, /* object is cursed */
+ISKNOW = 0000002,  /* player knows details about the object */
+ISMISL = 0000004,  /* object is a missile type */
+ISMANY = 0000010,  /* object comes in groups */
 /*	ISFOUND 0000020		...is used for both objects and creatures */
-static const int ISPROT = 0000040; /* armor is permanently protected */
+ISPROT = 0000040 /* armor is permanently protected */
+};
 
 /* flags for creatures */
-static const int CANHUH = 0000001;  /* creature can confuse */
-static const int CANSEE = 0000002;  /* creature can see invisible creatures */
-static const int ISBLIND = 0000004; /* creature is blind */
-static const int ISCANC = 0000010;  /* creature has special qualities cancelled */
-static const int ISLEVIT = 0000010; /* hero is levitating */
-static const int ISFOUND = 0000020; /* creature has been seen (used for objects) */
-static const int ISGREED = 0000040; /* creature runs to protect gold */
-static const int ISHASTE = 0000100; /* creature has been hastened */
-static const int ISTARGET = 000200; /* creature is the target of an 'f' command */
-static const int ISHELD = 0000400;  /* creature has been held */
-static const int ISHUH = 0001000;   /* creature is confused */
-static const int ISINVIS = 0002000; /* creature is invisible */
-static const int ISMEAN = 0004000;  /* creature can wake when player enters room */
-static const int ISHALU = 0004000;  /* hero is on acid trip */
-static const int ISREGEN = 0010000; /* creature can regenerate */
-static const int ISRUN = 0020000;   /* creature is running at the player */
-static const int SEEMONST = 040000; /* hero can detect unseen monsters */
-static const int ISFLY = 0040000;   /* creature can fly */
-static const int ISSLOW = 0100000;  /* creature has been slowed */
+enum creature_flags {
+CANHUH = 0000001,  /* creature can confuse */
+CANSEE = 0000002,  /* creature can see invisible creatures */
+ISBLIND = 0000004, /* creature is blind */
+ISCANC = 0000010,  /* creature has special qualities cancelled */
+ISLEVIT = 0000010, /* hero is levitating */
+ISFOUND = 0000020, /* creature has been seen (used for objects) */
+ISGREED = 0000040, /* creature runs to protect gold */
+ISHASTE = 0000100, /* creature has been hastened */
+ISTARGET = 000200, /* creature is the target of an 'f' command */
+ISHELD = 0000400,  /* creature has been held */
+ISHUH = 0001000,   /* creature is confused */
+ISINVIS = 0002000, /* creature is invisible */
+ISMEAN = 0004000,  /* creature can wake when player enters room */
+ISHALU = 0004000,  /* hero is on acid trip */
+ISREGEN = 0010000, /* creature can regenerate */
+ISRUN = 0020000,   /* creature is running at the player */
+SEEMONST = 040000, /* hero can detect unseen monsters */
+ISFLY = 0040000,   /* creature can fly */
+ISSLOW = 0100000  /* creature has been slowed */
+};
 
 /*
  * Flags for level map
  */
-static const int F_PASS = 0x80;    /* is a passageway */
-static const int F_SEEN = 0x40;    /* have seen this spot before */
-static const int F_DROPPED = 0x20; /* object was dropped here */
-static const int F_LOCKED = 0x20;  /* door is locked */
-static const int F_REAL = 0x10;    /* what you see is what you get */
-static const int F_PNUM = 0x0f;    /* passage number mask */
-static const int F_TMASK = 0x07;   /* trap number mask */
+enum map_flags {
+F_PASS = 0x80,    /* is a passageway */
+F_SEEN = 0x40,    /* have seen this spot before */
+F_DROPPED = 0x20, /* object was dropped here */
+F_LOCKED = 0x20,  /* door is locked */
+F_REAL = 0x10,    /* what you see is what you get */
+F_PNUM = 0x0f,    /* passage number mask */
+F_TMASK = 0x07   /* trap number mask */
+};
 
 /*
  * Trap types
  */
-static const int T_DOOR = 00;
-static const int T_ARROW = 01;
-static const int T_SLEEP = 02;
-static const int T_BEAR = 03;
-static const int T_TELEP = 04;
-static const int T_DART = 05;
-static const int T_RUST = 06;
-static const int T_MYST = 07;
-static const int NTRAPS = 8;
+enum trap_types {
+T_DOOR = 00,
+T_ARROW = 01,
+T_SLEEP = 02,
+T_BEAR = 03,
+T_TELEP = 04,
+T_DART = 05,
+T_RUST = 06,
+T_MYST = 07,
+NTRAPS = 8
+};
 
 /*
  * Potion types
  */
-static const int P_CONFUSE = 0;
-static const int P_LSD = 1;
-static const int P_POISON = 2;
-static const int P_STRENGTH = 3;
-static const int P_SEEINVIS = 4;
-static const int P_HEALING = 5;
-static const int P_MFIND = 6;
-static const int P_TFIND = 7;
-static const int P_RAISE = 8;
-static const int P_XHEAL = 9;
-static const int P_HASTE = 10;
-static const int P_RESTORE = 11;
-static const int P_BLIND = 12;
-static const int P_LEVIT = 13;
-static const int MAXPOTIONS = 14;
+enum potion_types {
+P_CONFUSE = 0,
+P_LSD = 1,
+P_POISON = 2,
+P_STRENGTH = 3,
+P_SEEINVIS = 4,
+P_HEALING = 5,
+P_MFIND = 6,
+P_TFIND = 7,
+P_RAISE = 8,
+P_XHEAL = 9,
+P_HASTE = 10,
+P_RESTORE = 11,
+P_BLIND = 12,
+P_LEVIT = 13,
+MAXPOTIONS = 14
+};
 
 /*
  * Scroll types
  */
-static const int S_CONFUSE = 0;
-static const int S_MAP = 1;
-static const int S_HOLD = 2;
-static const int S_SLEEP = 3;
-static const int S_ARMOR = 4;
-static const int S_ID_POTION = 5;
-static const int S_ID_SCROLL = 6;
-static const int S_ID_WEAPON = 7;
-static const int S_ID_ARMOR = 8;
-static const int S_ID_R_OR_S = 9;
-static const int S_SCARE = 10;
-static const int S_FDET = 11;
-static const int S_TELEP = 12;
-static const int S_ENCH = 13;
-static const int S_CREATE = 14;
-static const int S_REMOVE = 15;
-static const int S_AGGR = 16;
-static const int S_PROTECT = 17;
-static const int MAXSCROLLS = 18;
+enum scroll_types {
+S_CONFUSE = 0,
+S_MAP = 1,
+S_HOLD = 2,
+S_SLEEP = 3,
+S_ARMOR = 4,
+S_ID_POTION = 5,
+S_ID_SCROLL = 6,
+S_ID_WEAPON = 7,
+S_ID_ARMOR = 8,
+S_ID_R_OR_S = 9,
+S_SCARE = 10,
+S_FDET = 11,
+S_TELEP = 12,
+S_ENCH = 13,
+S_CREATE = 14,
+S_REMOVE = 15,
+S_AGGR = 16,
+S_PROTECT = 17,
+MAXSCROLLS = 18
+};
 
 /*
  * Weapon types
  */
-static const int MACE = 0;
-static const int SWORD = 1;
-static const int  BOW = 2;
-static const int ARROW = 3;
-static const int  DAGGER = 4;
-static const int TWOSWORD = 5;
-static const int DART = 6;
-static const int SHIRAKEN = 7;
-static const int SPEAR = 8;
-static const int FLAME = 9;      /* fake entry for dragon breath (ick) */
-static const int MAXWEAPONS = 9; /* this should equal FLAME */
+enum weapon_types {
+MACE = 0,
+SWORD = 1,
+BOW = 2,
+ARROW = 3,
+DAGGER = 4,
+TWOSWORD = 5,
+DART = 6,
+SHIRAKEN = 7,
+SPEAR = 8,
+FLAME = 9,      /* fake entry for dragon breath (ick) */
+MAXWEAPONS = 9 /* this should equal FLAME */
+};
 
 /*
  * Armor types
  */
-static const int LEATHER = 0;
-static const int RING_MAIL = 1;
-static const int STUDDED_LEATHER = 2;
-static const int SCALE_MAIL = 3;
-static const int CHAIN_MAIL = 4;
-static const int SPLINT_MAIL = 5;
-static const int BANDED_MAIL = 6;
-static const int PLATE_MAIL = 7;
-static const int MAXARMORS = 8;
+enum armor_types {
+LEATHER = 0,
+RING_MAIL = 1,
+STUDDED_LEATHER = 2,
+SCALE_MAIL = 3,
+CHAIN_MAIL = 4,
+SPLINT_MAIL = 5,
+BANDED_MAIL = 6,
+PLATE_MAIL = 7,
+MAXARMORS = 8
+};
 
 /*
  * Ring types
  */
-static const int R_PROTECT = 0;
-static const int R_ADDSTR = 1;
-static const int R_SUSTSTR = 2;
-static const int R_SEARCH = 3;
-static const int R_SEEINVIS = 4;
-static const int R_NOP = 5;
-static const int R_AGGR = 6;
-static const int R_ADDHIT = 7;
-static const int R_ADDDAM = 8;
-static const int R_REGEN = 9;
-static const int R_DIGEST = 10;
-static const int R_TELEPORT = 11;
-static const int R_STEALTH = 12;
-static const int R_SUSTARM = 13;
-static const int MAXRINGS = 14;
+enum ring_types {
+R_PROTECT = 0,
+R_ADDSTR = 1,
+R_SUSTSTR = 2,
+R_SEARCH = 3,
+R_SEEINVIS = 4,
+R_NOP = 5,
+R_AGGR = 6,
+R_ADDHIT = 7,
+R_ADDDAM = 8,
+R_REGEN = 9,
+R_DIGEST = 10,
+R_TELEPORT = 11,
+R_STEALTH = 12,
+R_SUSTARM = 13,
+MAXRINGS = 14
+};
 
 /*
  * Rod/Wand/Staff types
  */
-static const int WS_LIGHT = 0;
-static const int WS_INVIS = 1;
-static const int WS_ELECT = 2;
-static const int WS_FIRE = 3;
-static const int WS_COLD = 4;
-static const int WS_POLYMORPH = 5;
-static const int WS_MISSILE = 6;
-static const int WS_HASTE_M = 7;
-static const int WS_SLOW_M = 8;
-static const int WS_DRAIN = 9;
-static const int WS_NOP = 10;
-static const int WS_TELAWAY = 11;
-static const int WS_TELTO = 12;
-static const int WS_CANCEL = 13;
-static const int MAXSTICKS = 14;
+enum stick_types {
+WS_LIGHT = 0,
+WS_INVIS = 1,
+WS_ELECT = 2,
+WS_FIRE = 3,
+WS_COLD = 4,
+WS_POLYMORPH = 5,
+WS_MISSILE = 6,
+WS_HASTE_M = 7,
+WS_SLOW_M = 8,
+WS_DRAIN = 9,
+WS_NOP = 10,
+WS_TELAWAY = 11,
+WS_TELTO = 12,
+WS_CANCEL = 13,
+MAXSTICKS = 14
+};
 
 /*
  * Now we define the structures and types
