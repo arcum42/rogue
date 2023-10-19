@@ -185,7 +185,8 @@ fatal(char *s)
 int
 rnd(int range)
 {
-    return range == 0 ? 0 : abs((int) RN) % range;
+    if (range <= 0) return 0;
+    return range = abs(rand()) % range;
 }
 
 /*
