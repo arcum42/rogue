@@ -11,6 +11,7 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stddef.h> // for size_t, NULL
 #include <curses.h>
 #include "rogue.h"
 
@@ -18,25 +19,43 @@
 #define DAEMON -1
 #define MAXDAEMONS 20
 
-#define _X_ { EMPTY }
+#define _X_ {EMPTY}
+
+typedef void (*delayed_func_t)(int);
 
 struct delayed_action d_list[MAXDAEMONS] = {
-    _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_,
-    _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, _X_, 
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
+    _X_,
 };
 
 /*
  * d_slot:
- *	Find an empty slot in the daemon/fuse list
+ *     Find an empty slot in the daemon/fuse list
  */
-struct delayed_action *
-d_slot()
+static struct delayed_action *
+d_slot(void)
 {
-    register struct delayed_action *dev;
-
-    for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-	if (dev->d_type == EMPTY)
-	    return dev;
+    for (size_t i = 0; i < MAXDAEMONS; ++i)
+        if (d_list[i].d_type == EMPTY)
+            return &d_list[i];
 #ifdef MASTER
     debug("Ran out of fuse slots");
 #endif
@@ -45,29 +64,26 @@ d_slot()
 
 /*
  * find_slot:
- *	Find a particular slot in the table
+ *     Find a particular slot in the table
  */
-struct delayed_action *
-find_slot(void (*func)())
+static struct delayed_action *
+find_slot(delayed_func_t func)
 {
-    register struct delayed_action *dev;
-
-    for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-	if (dev->d_type != EMPTY && func == dev->d_func)
-	    return dev;
+    for (size_t i = 0; i < MAXDAEMONS; ++i)
+        if (d_list[i].d_type != EMPTY && func == d_list[i].d_func)
+            return &d_list[i];
     return NULL;
 }
 
 /*
  * start_daemon:
- *	Start a daemon, takes a function.
+ *     Start a daemon, takes a function.
  */
-void
-start_daemon(void (*func)(), int arg, int type)
+void start_daemon(delayed_func_t func, int arg, int type)
 {
-    register struct delayed_action *dev;
-
-    dev = d_slot();
+    struct delayed_action *dev = d_slot();
+    if (dev == NULL)
+        return;
     dev->d_type = type;
     dev->d_func = func;
     dev->d_arg = arg;
@@ -76,52 +92,37 @@ start_daemon(void (*func)(), int arg, int type)
 
 /*
  * kill_daemon:
- *	Remove a daemon from the list
+ *     Remove a daemon from the list
  */
-void
-kill_daemon(void (*func)())
+void kill_daemon(delayed_func_t func)
 {
-    register struct delayed_action *dev;
-
-    if ((dev = find_slot(func)) == NULL)
-	return;
-    /*
-     * Take it out of the list
-     */
+    struct delayed_action *dev = find_slot(func);
+    if (dev == NULL)
+        return;
     dev->d_type = EMPTY;
 }
 
 /*
  * do_daemons:
- *	Run all the daemons that are active with the current flag,
- *	passing the argument to the function.
+ *     Run all the daemons that are active with the current flag,
+ *     passing the argument to the function.
  */
-void
-do_daemons(int flag)
+void do_daemons(int flag)
 {
-    register struct delayed_action *dev;
-
-    /*
-     * Loop through the devil list
-     */
-    for (dev = d_list; dev <= &d_list[MAXDAEMONS-1]; dev++)
-	/*
-	 * Executing each one, giving it the proper arguments
-	 */
-	if (dev->d_type == flag && dev->d_time == DAEMON)
-	    (*dev->d_func)(dev->d_arg);
+    for (size_t i = 0; i < MAXDAEMONS; ++i)
+        if (d_list[i].d_type == flag && d_list[i].d_time == DAEMON)
+            d_list[i].d_func(d_list[i].d_arg);
 }
 
 /*
  * fuse:
- *	Start a fuse to go off in a certain number of turns
+ *     Start a fuse to go off in a certain number of turns
  */
-void
-fuse(void (*func)(), int arg, int time, int type)
+void fuse(delayed_func_t func, int arg, int time, int type)
 {
-    register struct delayed_action *wire;
-
-    wire = d_slot();
+    struct delayed_action *wire = d_slot();
+    if (wire == NULL)
+        return;
     wire->d_type = type;
     wire->d_func = func;
     wire->d_arg = arg;
@@ -130,52 +131,38 @@ fuse(void (*func)(), int arg, int time, int type)
 
 /*
  * lengthen:
- *	Increase the time until a fuse goes off
+ *     Increase the time until a fuse goes off
  */
-void
-lengthen(void (*func)(), int xtime)
+void lengthen(delayed_func_t func, int xtime)
 {
-    register struct delayed_action *wire;
-
-    if ((wire = find_slot(func)) == NULL)
-	return;
+    struct delayed_action *wire = find_slot(func);
+    if (wire == NULL)
+        return;
     wire->d_time += xtime;
 }
 
 /*
  * extinguish:
- *	Put out a fuse
+ *     Put out a fuse
  */
-void
-extinguish(void (*func)())
+void extinguish(delayed_func_t func)
 {
-    register struct delayed_action *wire;
-
-    if ((wire = find_slot(func)) == NULL)
-	return;
+    struct delayed_action *wire = find_slot(func);
+    if (wire == NULL)
+        return;
     wire->d_type = EMPTY;
 }
 
 /*
  * do_fuses:
- *	Decrement counters and start needed fuses
+ *     Decrement counters and start needed fuses
  */
-void
-do_fuses(int flag)
+void do_fuses(int flag)
 {
-    register struct delayed_action *wire;
-
-    /*
-     * Step though the list
-     */
-    for (wire = d_list; wire <= &d_list[MAXDAEMONS-1]; wire++)
-	/*
-	 * Decrementing counters and starting things we want.  We also need
-	 * to remove the fuse from the list once it has gone off.
-	 */
-	if (flag == wire->d_type && wire->d_time > 0 && --wire->d_time == 0)
-	{
-	    wire->d_type = EMPTY;
-	    (*wire->d_func)(wire->d_arg);
-	}
+    for (size_t i = 0; i < MAXDAEMONS; ++i)
+        if (flag == d_list[i].d_type && d_list[i].d_time > 0 && --d_list[i].d_time == 0)
+        {
+            d_list[i].d_type = EMPTY;
+            d_list[i].d_func(d_list[i].d_arg);
+        }
 }

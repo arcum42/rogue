@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Modernized: June 2025
 /*
  * Functions for dealing with linked lists of goodies
  *
@@ -11,11 +13,11 @@
  */
 
 #include <stdlib.h>
-#include <curses.h>
+#include <assert.h>
 #include "rogue.h"
 
 #ifdef MASTER
-int total = 0;			/* total dynamic memory bytes */
+int total = 0; /* total dynamic memory bytes */
 #endif
 
 /*
@@ -23,15 +25,15 @@ int total = 0;			/* total dynamic memory bytes */
  *	takes an item out of whatever linked list it might be in
  */
 
-void
-_detach(THING **list, THING *item)
+void _detach(THING **list, THING *item)
 {
+    assert(list != NULL && item != NULL);
     if (*list == item)
-	*list = next(item);
+        *list = next(item);
     if (prev(item) != NULL)
-	item->l_prev->l_next = next(item);
+        prev(item)->l_next = next(item);
     if (next(item) != NULL)
-	item->l_next->l_prev = prev(item);
+        next(item)->l_prev = prev(item);
     item->l_next = NULL;
     item->l_prev = NULL;
 }
@@ -41,19 +43,19 @@ _detach(THING **list, THING *item)
  *	add an item to the head of a list
  */
 
-void
-_attach(THING **list, THING *item)
+void _attach(THING **list, THING *item)
 {
+    assert(list != NULL && item != NULL);
     if (*list != NULL)
     {
-	item->l_next = *list;
-	(*list)->l_prev = item;
-	item->l_prev = NULL;
+        item->l_next = *list;
+        (*list)->l_prev = item;
+        item->l_prev = NULL;
     }
     else
     {
-	item->l_next = NULL;
-	item->l_prev = NULL;
+        item->l_next = NULL;
+        item->l_prev = NULL;
     }
     *list = item;
 }
@@ -63,16 +65,14 @@ _attach(THING **list, THING *item)
  *	Throw the whole blamed thing away
  */
 
-void
-_free_list(THING **ptr)
+void _free_list(THING **ptr)
 {
-    THING *item;
-
+    assert(ptr != NULL);
     while (*ptr != NULL)
     {
-	item = *ptr;
-	*ptr = next(item);
-	discard(item);
+        THING *item = *ptr;
+        *ptr = next(item);
+        discard(item);
     }
 }
 
@@ -81,13 +81,13 @@ _free_list(THING **ptr)
  *	Free up an item
  */
 
-void
-discard(THING *item)
+void discard(THING *item)
 {
+    assert(item != NULL);
 #ifdef MASTER
     total--;
 #endif
-    free((char *) item);
+    free(item);
 }
 
 /*
@@ -95,19 +95,22 @@ discard(THING *item)
  *	Get a new item with a specified size
  */
 THING *
-new_item()
+new_item(void)
 {
     THING *item;
 
 #ifdef MASTER
     if ((item = calloc(1, sizeof *item)) == NULL)
-	msg("ran out of memory after %d items", total);
+        msg("ran out of memory after %d items", total);
     else
-	total++;
+        total++;
 #else
     item = calloc(1, sizeof *item);
 #endif
-    item->l_next = NULL;
-    item->l_prev = NULL;
+    if (item)
+    {
+        item->l_next = NULL;
+        item->l_prev = NULL;
+    }
     return item;
 }

@@ -9,81 +9,109 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 #include <curses.h>
 #include "rogue.h"
 
+enum
+{
+    MAX_BUFFER_SIZE = 256
+};
+
 /*
  * wear:
- *	The player wants to wear something, so let him/her put it on.
+ *   The player wants to wear something, so let them put it on.
  */
-void
-wear()
+void wear(void)
 {
-    register THING *obj;
-    register char *sp;
+    THING *obj;
+    const char *sp;
 
-    if ((obj = get_item("wear", ARMOR)) == NULL)
-	return;
+    obj = get_item("wear", ARMOR);
+    if (obj == NULL)
+        return;
     if (cur_armor != NULL)
     {
-	addmsg("you are already wearing some");
-	if (!terse)
-	    addmsg(".  You'll have to take it off first");
-	endmsg();
-	after = FALSE;
-	return;
+        addmsg("you are already wearing some");
+        if (!terse)
+            addmsg(".  You'll have to take it off first");
+        endmsg();
+        after = false;
+        return;
     }
     if (obj->o_type != ARMOR)
     {
-	msg("you can't wear that");
-	return;
+        msg("you can't wear that");
+        return;
     }
     waste_time();
     obj->o_flags |= ISKNOW;
-    sp = inv_name(obj, TRUE);
+    sp = inv_name(obj, true);
     cur_armor = obj;
     if (!terse)
-	addmsg("you are now ");
+        addmsg("you are now ");
     msg("wearing %s", sp);
 }
 
 /*
  * take_off:
- *	Get the armor off of the players back
+ *   Get the armor off of the player's back
  */
-void
-take_off()
+void take_off(void)
 {
-    register THING *obj;
+    THING *obj;
 
-    if ((obj = cur_armor) == NULL)
+    obj = cur_armor;
+    if (obj == NULL)
     {
-	after = FALSE;
-	if (terse)
-		msg("not wearing armor");
-	else
-		msg("you aren't wearing any armor");
-	return;
+        after = false;
+        if (terse)
+            msg("not wearing armor");
+        else
+            msg("you aren't wearing any armor");
+        return;
     }
     if (!dropcheck(cur_armor))
-	return;
+        return;
     cur_armor = NULL;
     if (terse)
-	addmsg("was");
+        addmsg("was");
     else
-	addmsg("you used to be");
-    msg(" wearing %c) %s", obj->o_packch, inv_name(obj, TRUE));
+        addmsg("you used to be");
+    msg(" wearing %c) %s", obj->o_packch, inv_name(obj, true));
 }
 
 /*
  * waste_time:
- *	Do nothing but let other things happen
+ *   Do nothing but let other things happen
  */
-void
-waste_time()
+void waste_time(void)
 {
     do_daemons(BEFORE);
     do_fuses(BEFORE);
     do_daemons(AFTER);
     do_fuses(AFTER);
+}
+
+// Use safer string copy
+void copy_string(char *dest, const char *src, size_t size)
+{
+    if (dest != NULL && src != NULL && size > 0)
+    {
+        strncpy(dest, src, size - 1);
+        dest[size - 1] = '\0';
+    }
+}
+
+// Example function modernization:
+void print_message(const char *message)
+{
+    if (message != NULL)
+    {
+        printf("%s\n", message);
+    }
 }

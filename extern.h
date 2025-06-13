@@ -10,6 +10,19 @@
  * See the file LICENSE.TXT for full copyright and licensing information.
  */
 
+#pragma once
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+/*
+ * Rogue: Exploring the Dungeons of Doom
+ * Copyright (C) 1980-1983, 1985, 1999 Michael Toy, Ken Arnold and Glenn Wichman
+ * All rights reserved.
+ *
+ * See the file LICENSE.TXT for full copyright and licensing information.
+ */
 
 #ifdef HAVE_CONFIG_H
 #ifdef PDCURSES
@@ -93,105 +106,92 @@
 #undef HAVE_GETPWUID /* DJGPP's limited version doesn't even work as documented */
 #endif
 
-/*
- * Don't change the constants, since they are used for sizes in many
- * places in the program.
- */
+// Maximum length of strings and screen dimensions
+#define MAXSTR 1024
+#define MAXLINES 32
+#define MAXCOLS 80
 
-#include <stdlib.h>
-
-#undef SIGTSTP
-
-#define MAXSTR		1024	/* maximum length of strings */
-#define MAXLINES	32	/* maximum number of screen lines used */
-#define MAXCOLS		80	/* maximum number of screen columns used */
-
-#define RN		(((seed = seed*11109+13849) >> 16) & 0xffff)
-#ifdef CTRL
-#undef CTRL
-#endif
-#define CTRL(c)		(c & 037)
+#define RN (((seed = seed * 11109 + 13849) >> 16) & 0xffff)
+#define CTRL(c) ((c) & 037)
 
 /*
  * Now all the global variables
  */
 
-extern bool	got_ltc, in_shell;
-extern int	wizard;
-extern char	fruit[], prbuf[], whoami[];
+extern bool got_ltc, in_shell;
+extern int wizard;
+extern char fruit[], prbuf[], whoami[];
 extern int orig_dsusp;
-extern FILE	*scoreboard;
+extern FILE *scoreboard;
 
 /*
- * Function types
+ * Function prototypes
  */
 
-void    auto_save(int);
-void	come_down();
-void	doctor();
-void	end_line();
-void    endit(int sig);
-void	fatal();
-void	getltchars();
-void	land();
-void    leave(int);
-void	my_exit();
-void	nohaste();
-void	playit();
-void    playltchars(void);
-void	print_disc(char);
-void    quit(int);
-void    resetltchars(void);
-void	rollwand();
-void	runners();
-void	set_order();
-void	sight();
-void	stomach();
-void	swander();
-void	tstp(int ignored);
-void	unconfuse();
-void	unsee();
-void	visuals();
+void auto_save(int sig);
+void come_down(void);
+void doctor(void);
+void end_line(void);
+void endit(int sig);
+void fatal(const char *s);
+void getltchars(void);
+void land(void);
+void leave(int status);
+void my_exit(int st);
+void nohaste(void);
+void playit(void);
+void playltchars(void);
+void print_disc(char ch);
+void quit(int status);
+void resetltchars(void);
+void rollwand(void);
+void runners(void);
+void set_order(int *order, int numthings);
+void sight(void);
+void stomach(void);
+void swander(void);
+void tstp(int ignored);
+void unconfuse(void);
+void unsee(void);
+void visuals(void);
 
-char	add_line(char *fmt, char *arg);
-
-char	*killname(char monst, bool doart);
-char	*nothing(char type);
-char	*type_name(int type);
+char add_line(char *fmt, char *arg);
+char *killname(char monst, bool doart);
+char *nothing(char type);
+char *type_name(int type);
 
 #ifdef CHECKTIME
-int	checkout();
+int checkout(void);
 #endif
 
-int	md_chmod(char *filename, int mode);
-char	*md_crypt(char *key, char *salt);
-int	md_dsuspchar();
-int	md_erasechar();
-char	*md_gethomedir();
-char	*md_getusername();
-int	md_getuid();
-char	*md_getpass(char *prompt);
-int	md_getpid();
-char	*md_getrealname(int uid);
-void	md_init();
-int	md_killchar();
-void	md_normaluser();
-void	md_raw_standout();
-void	md_raw_standend();
-int	md_readchar();
-int	md_setdsuspchar(int c);
-int	md_shellescape();
-void	md_sleep(int s);
-int	md_suspchar();
-int	md_hasclreol();
-int	md_unlink(char *file);
-int	md_unlink_open_file(char *file, FILE *inf);
-void md_tstpsignal();
-void md_tstphold();
-void md_tstpresume();
-void md_ignoreallsignals();
-void md_onsignal_autosave();
-void md_onsignal_exit();
-void md_onsignal_default();
-int md_issymlink(char *sp);
-
+int md_chmod(char *filename, int mode);
+char *md_crypt(char *key, char *salt);
+int md_dsuspchar(void);
+int md_erasechar(void);
+char *md_gethomedir(void);
+char *md_getusername(void);
+int md_getuid(void);
+char *md_getpass(char *prompt);
+int md_getpid(void);
+char *md_getrealname(int uid);
+void md_init(void);
+int md_killchar(void);
+void md_normaluser(void);
+void md_raw_standout(void);
+void md_raw_standend(void);
+int md_readchar(void);
+int md_setdsuspchar(int c);
+int md_shellescape(void);
+void md_sleep(int s);
+int md_suspchar(void);
+int md_hasclreol(void);
+int md_unlink(char *file);
+int md_unlink_open_file(char *file, FILE *inf);
+void md_tstpsignal(void);
+void md_tstphold(void);
+void md_tstpresume(void);
+void md_ignoreallsignals(void);
+void md_onsignal_autosave(void);
+void md_onsignal_exit(void);
+void md_onsignal_default(void);
+int md_issymlink(const char *sp);

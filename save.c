@@ -17,12 +17,14 @@
 #include <signal.h>
 #include <string.h>
 #include <curses.h>
+#include <stdbool.h>
 #include "rogue.h"
 #include "score.h"
 
 typedef struct stat STAT;
 
 extern char version[], encstr[];
+extern char statlist[];
 
 static STAT sbuf;
 
@@ -31,12 +33,11 @@ static STAT sbuf;
  *	Implement the "save game" command
  */
 
-void
-save_game()
+void save_game(void)
 {
-    FILE *savef;
+    FILE *savef = NULL;
     int c;
-    auto char buf[MAXSTR];
+    char buf[MAXSTR];
 
     /*
      * get file name
@@ -45,67 +46,69 @@ save_game()
 over:
     if (file_name[0] != '\0')
     {
-	for (;;)
-	{
-	    msg("save file (%s)? ", file_name);
-	    c = readchar();
-	    mpos = 0;
-	    if (c == ESCAPE)
-	    {
-		msg("");
-		return;
-	    }
-	    else if (c == 'n' || c == 'N' || c == 'y' || c == 'Y')
-		break;
-	    else
-		msg("please answer Y or N");
-	}
-	if (c == 'y' || c == 'Y')
-	{
-	    addstr("Yes\n");
-	    refresh();
-	    strcpy(buf, file_name);
-	    goto gotfile;
-	}
+        for (;;)
+        {
+            msg("save file (%s)? ", file_name);
+            c = readchar();
+            mpos = 0;
+            if (c == ESCAPE)
+            {
+                msg("");
+                return;
+            }
+            else if (c == 'n' || c == 'N' || c == 'y' || c == 'Y')
+                break;
+            else
+                msg("please answer Y or N");
+        }
+        if (c == 'y' || c == 'Y')
+        {
+            addstr("Yes\n");
+            refresh();
+            strcpy(buf, file_name);
+            goto gotfile;
+        }
     }
 
     do
     {
-	mpos = 0;
-	msg("file name: ");
-	buf[0] = '\0';
-	if (get_str(buf, stdscr) == QUIT)
-	{
-quit_it:
-	    msg("");
-	    return;
-	}
-	mpos = 0;
-gotfile:
-	/*
-	 * test to see if the file exists
-	 */
-	if (stat(buf, &sbuf) >= 0)
-	{
-	    for (;;)
-	    {
-		msg("File exists.  Do you wish to overwrite it?");
-		mpos = 0;
-		if ((c = readchar()) == ESCAPE)
-		    goto quit_it;
-		if (c == 'y' || c == 'Y')
-		    break;
-		else if (c == 'n' || c == 'N')
-		    goto over;
-		else
-		    msg("Please answer Y or N");
-	    }
-	    msg("file name: %s", buf);
-	    md_unlink(file_name);
-	}
-	strcpy(file_name, buf);
-	if ((savef = fopen(file_name, "w")) == NULL)
-	    msg(strerror(errno));
+        mpos = 0;
+        msg("file name: ");
+        buf[0] = '\0';
+        if (get_str(buf, stdscr) == QUIT)
+        {
+        quit_it:
+            msg("");
+            return;
+        }
+        mpos = 0;
+    gotfile:
+        /*
+         * test to see if the file exists
+         */
+        if (stat(buf, &sbuf) >= 0)
+        {
+            for (;;)
+            {
+                msg("File exists.  Do you wish to overwrite it?");
+                mpos = 0;
+                c = readchar();
+                if (c == ESCAPE)
+                    goto quit_it;
+                if (c == 'y' || c == 'Y')
+                    break;
+                else if (c == 'n' || c == 'N')
+                    goto over;
+                else
+                    msg("Please answer Y or N");
+            }
+            msg("file name: %s", buf);
+            md_unlink(file_name);
+        }
+        strcpy(file_name, buf);
+        savef = fopen(file_name, "w");
+        if (savef == NULL)
+            msg("%s", strerror(errno));
     } while (savef == NULL);
 
     save_file(savef);
@@ -118,16 +121,15 @@ gotfile:
  *	recieved
  */
 
-void
-auto_save(int sig)
+void auto_save(int sig)
 {
-    FILE *savef;
-    NOOP(sig);
+    FILE *savef = NULL;
+    (void)sig;
 
     md_ignoreallsignals();
     if (file_name[0] != '\0' && ((savef = fopen(file_name, "w")) != NULL ||
-	(md_unlink_open_file(file_name, savef) >= 0 && (savef = fopen(file_name, "w")) != NULL)))
-	    save_file(savef);
+                                 (md_unlink_open_file(file_name, savef) >= 0 && (savef = fopen(file_name, "w")) != NULL)))
+        save_file(savef);
     exit(0);
 }
 
@@ -136,18 +138,17 @@ auto_save(int sig)
  *	Write the saved game on the file
  */
 
-void
-save_file(FILE *savef)
+void save_file(FILE *savef)
 {
     char buf[80];
-    mvcur(0, COLS - 1, LINES - 1, 0); 
+    mvcur(0, COLS - 1, LINES - 1, 0);
     putchar('\n');
     endwin();
     resetltchars();
     md_chmod(file_name, 0400);
-    encwrite(version, strlen(version)+1, savef);
-    sprintf(buf,"%d x %d\n", LINES, COLS);
-    encwrite(buf,80,savef);
+    encwrite(version, strlen(version) + 1, savef);
+    snprintf(buf, sizeof(buf), "%d x %d\n", LINES, COLS);
+    encwrite(buf, sizeof(buf), savef);
     rs_save_file(savef);
     fflush(savef);
     fclose(savef);
@@ -159,55 +160,54 @@ save_file(FILE *savef)
  *	Restore a saved game from a file with elaborate checks for file
  *	integrity from cheaters
  */
-bool
-restore(char *file, char **envp)
+bool restore(char *file, char **envp)
 {
-    FILE *inf;
+    FILE *inf = NULL;
     int syml;
     extern char **environ;
-    auto char buf[MAXSTR];
-    auto STAT sbuf2;
+    char buf[MAXSTR];
+    STAT sbuf2;
     int lines, cols;
 
     if (strcmp(file, "-r") == 0)
-	file = file_name;
+        file = file_name;
 
-	md_tstphold();
+    md_tstphold();
 
-	if ((inf = fopen(file,"r")) == NULL)
+    if ((inf = fopen(file, "r")) == NULL)
     {
-	perror(file);
-	return FALSE;
+        perror(file);
+        return false;
     }
     stat(file, &sbuf2);
     syml = is_symlink(file);
 
     fflush(stdout);
-    encread(buf, (unsigned) strlen(version) + 1, inf);
+    encread(buf, (unsigned)strlen(version) + 1, inf);
     if (strcmp(buf, version) != 0)
     {
-	printf("Sorry, saved game is out of date.\n");
-	return FALSE;
+        printf("Sorry, saved game is out of date.\n");
+        return false;
     }
-    encread(buf,80,inf);
-    sscanf(buf,"%d x %d\n", &lines, &cols);
+    encread(buf, 80, inf);
+    sscanf(buf, "%d x %d\n", &lines, &cols);
 
-    initscr();                          /* Start up cursor package */
+    initscr(); /* Start up cursor package */
     keypad(stdscr, 1);
 
     if (lines > LINES)
     {
         endwin();
-        printf("Sorry, original game was played on a screen with %d lines.\n",lines);
-        printf("Current screen only has %d lines. Unable to restore game\n",LINES);
-        return(FALSE);
+        printf("Sorry, original game was played on a screen with %d lines.\n", lines);
+        printf("Current screen only has %d lines. Unable to restore game\n", LINES);
+        return false;
     }
     if (cols > COLS)
     {
         endwin();
-        printf("Sorry, original game was played on a screen with %d columns.\n",cols);
-        printf("Current screen only has %d columns. Unable to restore game\n",COLS);
-        return(FALSE);
+        printf("Sorry, original game was played on a screen with %d columns.\n", cols);
+        printf("Current screen only has %d columns. Unable to restore game\n", COLS);
+        return false;
     }
 
     hw = newwin(LINES, COLS, 0, 0);
@@ -221,40 +221,40 @@ restore(char *file, char **envp)
 
     if (
 #ifdef MASTER
-	!wizard &&
+        !wizard &&
 #endif
         md_unlink_open_file(file, inf) < 0)
     {
-	printf("Cannot unlink file\n");
-	return FALSE;
+        printf("Cannot unlink file\n");
+        return false;
     }
     mpos = 0;
-/*    printw(0, 0, "%s: %s", file, ctime(&sbuf2.st_mtime)); */
-/*
-    printw("%s: %s", file, ctime(&sbuf2.st_mtime));
-*/
-    clearok(stdscr,TRUE);
+    /*    printw(0, 0, "%s: %s", file, ctime(&sbuf2.st_mtime)); */
+    /*
+        printw("%s: %s", file, ctime(&sbuf2.st_mtime));
+    */
+    clearok(stdscr, TRUE);
     /*
      * defeat multiple restarting from the same place
      */
 #ifdef MASTER
     if (!wizard)
 #endif
-	if (sbuf2.st_nlink != 1 || syml)
-	{
-	    endwin();
-	    printf("\nCannot restore from a linked file\n");
-	    return FALSE;
-	}
+        if (sbuf2.st_nlink != 1 || syml)
+        {
+            endwin();
+            printf("\nCannot restore from a linked file\n");
+            return false;
+        }
 
     if (pstats.s_hpt <= 0)
     {
-	endwin();
-	printf("\n\"He's dead, Jim\"\n");
-	return FALSE;
+        endwin();
+        printf("\n\"He's dead, Jim\"\n");
+        return false;
     }
 
-	md_tstpresume();
+    md_tstpresume();
 
     environ = envp;
     strcpy(file_name, file);
@@ -263,7 +263,7 @@ restore(char *file, char **envp)
     msg("file name: %s", file);
     playit();
     /*NOTREACHED*/
-    return(0);
+    return (0);
 }
 
 /*
@@ -271,66 +271,60 @@ restore(char *file, char **envp)
  *	Perform an encrypted write
  */
 
-size_t
-encwrite(char *start, size_t size, FILE *outf)
+size_t encwrite(char *start, size_t size, FILE *outf)
 {
-    char *e1, *e2, fb;
+    char *e1 = encstr;
+    char *e2 = statlist;
+    char fb = 0;
     int temp;
-    extern char statlist[];
     size_t o_size = size;
-    e1 = encstr;
-    e2 = statlist;
-    fb = 0;
 
-    while(size)
+    while (size)
     {
-	if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
+        if (putc(*start++ ^ *e1 ^ *e2 ^ fb, outf) == EOF)
             break;
-
-	temp = *e1++;
-	fb = fb + ((char) (temp * *e2++));
-	if (*e1 == '\0')
-	    e1 = encstr;
-	if (*e2 == '\0')
-	    e2 = statlist;
-	size--;
+        temp = *e1++;
+        fb = fb + ((char)(temp * *e2++));
+        if (*e1 == '\0')
+            e1 = encstr;
+        if (*e2 == '\0')
+            e2 = statlist;
+        size--;
     }
-
-    return(o_size - size);
+    return (o_size - size);
 }
 
 /*
  * encread:
  *	Perform an encrypted read
  */
-size_t
-encread(char *start, size_t size, FILE *inf)
+size_t encread(char *start, size_t size, FILE *inf)
 {
-    char *e1, *e2, fb;
+    const char *e1 = encstr;
+    const char *e2 = statlist;
+    char fb = 0;
     int temp;
     size_t read_size;
-    extern char statlist[];
 
     fb = 0;
 
-    if ((read_size = fread(start,1,size,inf)) == 0 || read_size == -1)
-	return(read_size);
+    if ((read_size = fread(start, 1, size, inf)) == 0 || read_size == (size_t)-1)
+        return read_size;
 
     e1 = encstr;
     e2 = statlist;
 
     while (size--)
     {
-	*start++ ^= *e1 ^ *e2 ^ fb;
-	temp = *e1++;
-	fb = fb + (char)(temp * *e2++);
-	if (*e1 == '\0')
-	    e1 = encstr;
-	if (*e2 == '\0')
-	    e2 = statlist;
+        *start++ ^= *e1 ^ *e2 ^ fb;
+        temp = *e1++;
+        fb = fb + (char)(temp * *e2++);
+        if (*e1 == '\0')
+            e1 = encstr;
+        if (*e2 == '\0')
+            e2 = statlist;
     }
-
-    return(read_size);
+    return read_size;
 }
 
 static char scoreline[100];
@@ -338,53 +332,43 @@ static char scoreline[100];
  * read_scrore
  *	Read in the score file
  */
-void
-rd_score(SCORE *top_ten)
+void rd_score(SCORE *top_ten)
 {
     unsigned int i;
-
-	if (scoreboard == NULL)
-		return;
-
-	rewind(scoreboard); 
-
-	for(i = 0; i < numscores; i++)
+    if (scoreboard == NULL)
+        return;
+    rewind(scoreboard);
+    for (i = 0; i < numscores; i++)
     {
         encread(top_ten[i].sc_name, MAXSTR, scoreboard);
-        encread(scoreline, 100, scoreboard);
+        encread(scoreline, sizeof(scoreline), scoreboard);
         sscanf(scoreline, " %u %d %u %hu %d %x \n",
-            &top_ten[i].sc_uid, &top_ten[i].sc_score,
-            &top_ten[i].sc_flags, &top_ten[i].sc_monster,
-            &top_ten[i].sc_level, &top_ten[i].sc_time);
+               &top_ten[i].sc_uid, &top_ten[i].sc_score,
+               &top_ten[i].sc_flags, &top_ten[i].sc_monster,
+               &top_ten[i].sc_level, &top_ten[i].sc_time);
     }
-
-	rewind(scoreboard); 
+    rewind(scoreboard);
 }
 
 /*
  * write_scrore
  *	Read in the score file
  */
-void
-wr_score(SCORE *top_ten)
+void wr_score(SCORE *top_ten)
 {
     unsigned int i;
-
-	if (scoreboard == NULL)
-		return;
-
-	rewind(scoreboard);
-
-    for(i = 0; i < numscores; i++)
+    if (scoreboard == NULL)
+        return;
+    rewind(scoreboard);
+    for (i = 0; i < numscores; i++)
     {
-          memset(scoreline,0,100);
-          encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);
-          sprintf(scoreline, " %u %d %u %hu %d %x \n",
-              top_ten[i].sc_uid, top_ten[i].sc_score,
-              top_ten[i].sc_flags, top_ten[i].sc_monster,
-              top_ten[i].sc_level, top_ten[i].sc_time);
-          encwrite(scoreline,100,scoreboard);
+        memset(scoreline, 0, sizeof(scoreline));
+        encwrite(top_ten[i].sc_name, MAXSTR, scoreboard);
+        snprintf(scoreline, sizeof(scoreline), " %u %d %u %hu %d %x \n",
+                 top_ten[i].sc_uid, top_ten[i].sc_score,
+                 top_ten[i].sc_flags, top_ten[i].sc_monster,
+                 top_ten[i].sc_level, top_ten[i].sc_time);
+        encwrite(scoreline, sizeof(scoreline), scoreboard);
     }
-
-	rewind(scoreboard); 
+    rewind(scoreboard);
 }
